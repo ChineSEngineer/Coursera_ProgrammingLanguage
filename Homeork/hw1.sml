@@ -33,7 +33,7 @@ fun number_in_months (date_list : (int*int*int) list, month_list : int list) =
 	fun helper(date_list : (int*int*int) list, month_list : int list, count: int) =
 	    if null month_list
 	    then count
-	    else helper(date_list, tl month_list, number_in_month(date_list, hd month_list))
+	    else helper(date_list, tl month_list, count + number_in_month(date_list, hd month_list))
     in
 	helper(date_list, month_list, 0)
     end
@@ -85,7 +85,7 @@ fun month_range(day1 : int, day2 : int) =
     let
 	fun helper(day1 : int, res : int list) =
 	if day1 >= day2
-	then res
+	then res@[what_month(day1)]
 	else helper(day1 + 1,res@[what_month(day1)])
     in
 	helper(day1, [])
@@ -141,15 +141,19 @@ fun reasonable_date(date : int*int*int) =
     in
 	if #1 date <=0
 	then false
-	else if #2 date < 1 andalso #2 date > 12
-	then false
-	else if (#1 date) mod 400 = 0 orelse ((#1 date) mod 4 = 0 andalso (#1 date) mod 100 <> 0)
-	then if #3 date < 1 orelse #3 date > get_day(month_day_leap, #2 date)
-	     then false
-	     else true
-	else if #3 date < 1 orelse #3 date > get_day(month_day, #2 date)
-	then false
-	else true
+	else
+	    if #2 date < 1 orelse #2 date > 12
+	    then false
+	    else
+		if (#1 date) mod 400 = 0 orelse ((#1 date) mod 4 = 0 andalso (#1 date) mod 100 <> 0)
+		then
+		    if #3 date < 1 orelse #3 date > get_day(month_day_leap, #2 date)
+		    then false
+		    else true
+		else
+		    if #3 date < 1 orelse #3 date > get_day(month_day, #2 date)
+		    then false
+		    else true
 		 
     end
 
